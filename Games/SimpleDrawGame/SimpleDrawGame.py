@@ -1,8 +1,5 @@
-import math
 import time
-
 import cv2
-import numpy
 from mediapipe.python.solutions.hands import HandLandmark as HandLM
 from API.handTrackerWrapper import HandTrackerWrapper
 from API.CursorManager import CursorManager
@@ -16,17 +13,16 @@ class SimpleDrawGame:
         self.is_running = True
         cursorManager = CursorManager(r'Games/SimpleDrawGame/cursorRight.png', r'Games/SimpleDrawGame/cursorLeft.png')
         tracker = HandTrackerWrapper()
-        bg_image = cv2.resize(cv2.imread(r'Games/SimpleDrawGame/img.png'), (tracker.cap.read()[1].shape[1], tracker.cap.read()[1].shape[0]))
+        bg_image = cv2.resize(cv2.imread(r'Games/SimpleDrawGame/img.png'), (tracker.cap.read()[1].shape[1],
+                                                                            tracker.cap.read()[1].shape[0]))
         handPositionListRT = []
         handPositionListLF = []
-        mode = 1
-        fps = 0.0
+        mode = 0
         hand_colors = {"Right": (0, 0, 255),
                        "Left": (255, 0, 0)}
         while True:
             time1 = time.time()
             tracker.update_hands_list()
-
             for hand in tracker.hands_list:
                 if hand.isIndexFingerUp():
                     color = hand_colors[hand.side]
@@ -75,10 +71,12 @@ class SimpleDrawGame:
 
             image = tracker.cap.read()[1]
             if tracker.hands_list.has_right():
-                image = cv2.circle(tracker.cap.read()[1], tracker.hands_list.right.getLandmarkXY(HandLM.INDEX_FINGER_TIP), 4, (0,0,255), cv2.LINE_AA)
+                image = cv2.circle(image, tracker.hands_list.right.getLandmarkXY(HandLM.INDEX_FINGER_TIP), 4,
+                                   (0, 0, 255), cv2.LINE_AA)
             if tracker.hands_list.has_left():
-                image = cv2.circle(tracker.cap.read()[1], tracker.hands_list.left.getLandmarkXY(HandLM.INDEX_FINGER_TIP), 4, (255,0,0), cv2.LINE_AA)
-            #image = tracker.get_hands_image()
+                image = cv2.circle(image, tracker.hands_list.left.getLandmarkXY(HandLM.INDEX_FINGER_TIP), 4,
+                                   (255, 0, 0), cv2.LINE_AA)
+            image = cv2.flip(image, 1)
             print(str(time.time() - time3) + " time 3")
 
             time2 = time.time()
@@ -89,4 +87,3 @@ class SimpleDrawGame:
                 break
         cv2.destroyAllWindows()
         self.is_running = False
-
