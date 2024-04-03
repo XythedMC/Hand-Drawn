@@ -19,13 +19,14 @@ class SimpleDrawGame:
         bg_image = cv2.resize(cv2.imread(r'Games/SimpleDrawGame/img.png'), (tracker.cap.read()[1].shape[1], tracker.cap.read()[1].shape[0]))
         handPositionListRT = []
         handPositionListLF = []
-        mode = 0
+        mode = 1
         fps = 0.0
-        hand_colors = {"Right": (255, 0, 0),
-                       "Left": (0, 0, 255)}
+        hand_colors = {"Right": (0, 0, 255),
+                       "Left": (255, 0, 0)}
         while True:
             time1 = time.time()
             tracker.update_hands_list()
+
             for hand in tracker.hands_list:
                 if hand.isIndexFingerUp():
                     color = hand_colors[hand.side]
@@ -39,7 +40,7 @@ class SimpleDrawGame:
                                 handPositionListRT.append(hand.getLandmarkY(HandLM.INDEX_FINGER_TIP))
                             else:
                                 cv2.line(bg_image, (handPositionListRT[0], handPositionListRT[1]),
-                                         (handPositionListRT[2], handPositionListRT[3]), color, 10, cv2.FILLED)
+                                         (handPositionListRT[2], handPositionListRT[3]), color, 6, cv2.FILLED)
                                 handPositionListRT.remove(handPositionListRT[0])
                                 handPositionListRT.remove(handPositionListRT[0])
                         else:
@@ -48,29 +49,42 @@ class SimpleDrawGame:
                                 handPositionListLF.append(hand.getLandmarkY(HandLM.INDEX_FINGER_TIP))
                             else:
                                 cv2.line(bg_image, (handPositionListLF[0], handPositionListLF[1]),
-                                         (handPositionListLF[2], handPositionListLF[3]), color, 10, cv2.FILLED)
+                                         (handPositionListLF[2], handPositionListLF[3]), color, 6, cv2.FILLED)
                                 handPositionListLF.remove(handPositionListLF[0])
                                 handPositionListLF.remove(handPositionListLF[0])
+                elif hand.isHandOpen():
+                    bg_image = cv2.resize(cv2.imread(r'Games/SimpleDrawGame/img.png'),
+                                          (tracker.cap.read()[1].shape[1], tracker.cap.read()[1].shape[0]))
                 else:
-                    handPositionListLF.clear()
-                    handPositionListRT.clear()
+                    if hand == tracker.hands_list.left:
+                        handPositionListLF.clear()
+                    else:
+                        handPositionListRT.clear()
+            bg_image_copy = bg_image.copy()
             if tracker.hands_list.has_left():
                 x, y = tracker.hands_list.left.getLandmarkXY(HandLM.INDEX_FINGER_TIP)
-                cursorManager.displayCursor(bg_image.copy(), x, y, "Left")
+                cursorManager.displayCursor(bg_image_copy, x, y, "Left")
             if tracker.hands_list.has_right():
                 x, y = tracker.hands_list.right.getLandmarkXY(HandLM.INDEX_FINGER_TIP)
-                cursorManager.displayCursor(bg_image.copy(), x, y, "Right")
-            time2 = time.time()
-            fps = 1 / (time2-time1)
-            time1 = time2
-            print(str(numpy.round(fps, 1)) + " fps")
-            bg_image_copy = bg_image.copy()
+                cursorManager.displayCursor(bg_image_copy, x, y, "Right")
+            print(time.time() - time1)
+
+            time3 = time.time()
             cv2.namedWindow("Canvas", cv2.WINDOW_NORMAL)
             cv2.imshow("Canvas", bg_image_copy)
 
-            image = tracker.get_hands_image()
-            cv2.imshow("Video", image)
+            image = tracker.cap.read()[1]
+            if tracker.hands_list.has_right():
+                image = cv2.circle(tracker.cap.read()[1], tracker.hands_list.right.getLandmarkXY(HandLM.INDEX_FINGER_TIP), 4, (0,0,255), cv2.LINE_AA)
+            if tracker.hands_list.has_left():
+                image = cv2.circle(tracker.cap.read()[1], tracker.hands_list.left.getLandmarkXY(HandLM.INDEX_FINGER_TIP), 4, (255,0,0), cv2.LINE_AA)
+            #image = tracker.get_hands_image()
+            print(str(time.time() - time3) + " time 3")
 
+            time2 = time.time()
+            cv2.imshow("Video", image)
+            print(str(time.time() - time2) + " time 2")
+            print(time.time() - time1)
             if (cv2.waitKey(1) & 0xFF) == ord('q'):
                 break
         cv2.destroyAllWindows()
