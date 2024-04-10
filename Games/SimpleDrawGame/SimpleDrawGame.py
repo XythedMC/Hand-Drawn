@@ -68,15 +68,15 @@ class SimpleDrawGame:
             time3 = time.time()
             cv2.namedWindow("Canvas", cv2.WINDOW_NORMAL)
             cv2.imshow("Canvas", bg_image_copy)
-
             image = tracker.cap.read()[1]
+            image = cv2.flip(image, 1)
             if tracker.hands_list.has_right():
                 image = cv2.circle(image, tracker.hands_list.right.getLandmarkXY(HandLM.INDEX_FINGER_TIP), 4,
                                    (0, 0, 255), cv2.LINE_AA)
             if tracker.hands_list.has_left():
                 image = cv2.circle(image, tracker.hands_list.left.getLandmarkXY(HandLM.INDEX_FINGER_TIP), 4,
                                    (255, 0, 0), cv2.LINE_AA)
-            image = cv2.flip(image, 1)
+
             print(str(time.time() - time3) + " time 3")
 
             time2 = time.time()
