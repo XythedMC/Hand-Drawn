@@ -1,4 +1,7 @@
 import time
+import os
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+import tensorflow as tf
 import cv2
 from mediapipe.python.solutions.hands import HandLandmark as HandLM
 from API.handTrackerWrapper import HandTrackerWrapper
@@ -63,7 +66,6 @@ class SimpleDrawGame:
             if tracker.hands_list.has_right():
                 x, y = tracker.hands_list.right.getLandmarkXY(HandLM.INDEX_FINGER_TIP)
                 cursorManager.displayCursor(bg_image_copy, x, y, "Right")
-            print(time.time() - time1)
 
             time3 = time.time()
             cv2.namedWindow("Canvas", cv2.WINDOW_NORMAL)
