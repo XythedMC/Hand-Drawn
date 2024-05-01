@@ -3,22 +3,19 @@ from mediapipe.python.solutions.hands import HandLandmark as HandLM
 from API.handTrackerWrapper import HandTrackerWrapper
 from Games.SimpleMazeGame.maze_levels import LEVEL_1, LEVEL_2, LEVEL_3
 
+# Constants
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+MAZE_GRID_SIZE = 50
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+GREEN = (0, 255, 0)
+END = (255, 0, 0)
+
 def run_maze_game():
-    # Initialize Pygame
+    # Initialize Pygame with hardware acceleration
     pygame.init()
-
-    # Constants
-    SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
-    MAZE_GRID_SIZE = 50
-    WHITE = (255, 255, 255)
-    RED = (255, 0, 0)
-    BLUE = (0, 0, 255)
-    GREEN = (0, 255, 0)
-    END = (255, 0, 0)
-
-    # Initialize the screen
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("Maze Game with End Point")
 
     # Initialize the hand tracker
     hand_tracker = HandTrackerWrapper()
@@ -58,18 +55,31 @@ def run_maze_game():
                     maze_grid[row][col] = 0  # Set the starting position to an open path
         return maze_grid, start_row, start_col
 
-    maze_levels = [LEVEL_1, LEVEL_2, LEVEL_3]
+    maze_levels = [LEVEL_1, LEVEL_2, LEVEL_3, ]
     current_level = 0
 
     maze_grid, start_row, start_col = load_level(maze_levels[current_level])
 
     while running:
+        # Only update the screen if necessary
+        dirty_rects = []
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
         # Update hand information
         hand_tracker.update_hands_list()
+
+        # Move player_grid_x and player_grid_y calculations outside the loop
+        player_grid_x = int(player.centerx / MAZE_GRID_SIZE)
+        player_grid_y = int(player.centery / MAZE_GRID_SIZE)
+
+        # Reset player position if the level is completed
+        if reached_end:
+            player.center = (start_col * MAZE_GRID_SIZE + MAZE_GRID_SIZE // 2, start_row * MAZE_GRID_SIZE + MAZE_GRID_SIZE // 2)
+            reached_end = False
+            player_connected = False  # Disconnect player cursor from hand cursor
 
         # Iterate over detected hands
         for hand in hand_tracker.hands_list:
@@ -106,9 +116,6 @@ def run_maze_game():
                             player.center = hand_cursor.center
 
         # Check if the player cursor is inside a wall
-        player_grid_x = int(player.centerx / MAZE_GRID_SIZE)
-        player_grid_y = int(player.centery / MAZE_GRID_SIZE)
-
         if 0 <= player_grid_y < len(maze_grid) and 0 <= player_grid_x < len(maze_grid[0]):
             if maze_grid[player_grid_y][player_grid_x] == 1:
                 # Stop the player cursor when it hits a wall
@@ -149,11 +156,11 @@ def run_maze_game():
             current_level += 1
             if current_level < len(maze_levels):
                 maze_grid, start_row, start_col = load_level(maze_levels[current_level])
-                reached_end = False  # Reset the flag for the next level
             else:
                 # If there are no more levels, end the game
                 running = False
 
     # Quit Pygame
     pygame.quit()
+
 run_maze_game()
