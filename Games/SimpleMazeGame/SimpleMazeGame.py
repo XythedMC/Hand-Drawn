@@ -1,10 +1,11 @@
+
 import pygame
 from mediapipe.python.solutions.hands import HandLandmark as HandLM
 from API.handTrackerWrapper import HandTrackerWrapper
-from Games.SimpleMazeGame.maze_levels import LEVEL_1, LEVEL_2, LEVEL_3
+from Games.SimpleMazeGame.maze_levels import LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4
 
 # Constants
-SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+SCREEN_WIDTH, SCREEN_HEIGHT = 1920, 1080
 MAZE_GRID_SIZE = 50
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -13,7 +14,7 @@ GREEN = (0, 255, 0)
 END = (255, 0, 0)
 
 def run_maze_game():
-    # Initialize Pygame with hardware acceleration
+    # Initialize Pygame
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -55,7 +56,7 @@ def run_maze_game():
                     maze_grid[row][col] = 0  # Set the starting position to an open path
         return maze_grid, start_row, start_col
 
-    maze_levels = [LEVEL_1, LEVEL_2, LEVEL_3, ]
+    maze_levels = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4 ]
     current_level = 0
 
     maze_grid, start_row, start_col = load_level(maze_levels[current_level])
