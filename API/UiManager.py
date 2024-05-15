@@ -44,7 +44,6 @@ def overlay_image(background, overlay, x_offset, y_offset):
 
 
 class UiManager:
-
     class Button:
         def __init__(self, frame, xPos1, yPos1, xPos2, yPos2, color, text=None):
             self.frame = frame
@@ -65,16 +64,9 @@ class UiManager:
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
         def CreateImageButton(self, image):
-            o_aspect_ratio = image.shape[1] / image.shape[0]
-            t_aspect_ratio = (self.xPos2 - self.xPos1) / (self.yPos2 - self.yPos1)
-            if o_aspect_ratio > t_aspect_ratio:
-                scale = (self.xPos2 - self.xPos1) / image.shape[1]
-            else:
-                scale = (self.yPos2 - self.yPos1) / image.shape[0]
-            image = cv2.resize(image, (0, 0), fx=scale, fy=scale)
-            #image = cv2.resize(image, (self.xPos2 - self.xPos1, self.yPos2))
-            print(image.shape[1])
-            print(self.xPos2)
+            if image.shape[2] == 3:
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2BGRA)
+            image = cv2.resize(image, (self.xPos2 - self.xPos1, self.yPos2 - self.yPos1))
             overlay_image(self.frame, image, self.xPos1, self.yPos1)
             if self.text is not None:
                 textsize = cv2.getTextSize(self.text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)[0]
@@ -90,4 +82,11 @@ class UiManager:
                     return True
             else:
                 print("HELLO")
+            return False
+
+        def isCursorHover(self, cursorManager):
+            if ((self.xPos2 > cursorManager.cursorRTpos[0] > self.xPos1 and self.yPos2 > cursorManager.cursorRTpos[1])
+                    and (self.xPos2 > cursorManager.cursorLFpos[0] > self.xPos1 and self.yPos2 >
+                         cursorManager.cursorLFpos[1])):
+                return True
             return False

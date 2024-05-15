@@ -1,4 +1,5 @@
 import os
+
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 import tensorflow as tf
 import cv2
@@ -6,10 +7,11 @@ from mediapipe.python.solutions.hands import HandLandmark as HandLM
 from API.handTrackerWrapper import HandTrackerWrapper
 from API.CursorManager import CursorManager
 from API.UiManager import UiManager
-#from Games.SimpleDrawGame.SimpleDrawGame import SimpleDrawGame
-#from Games.SimpleMazeGame.SimpleMazeGame import SimpleMazeGame
+# from Games.SimpleDrawGame.SimpleDrawGame import SimpleDrawGame
+# from Games.SimpleMazeGame.SimpleMazeGame import SimpleMazeGame
 from Games.MainMenu.SimpleDrawGame import SimpleDrawGame
 import time
+
 
 class MainMenu:
     def __init__(self):
@@ -17,42 +19,52 @@ class MainMenu:
 
     def run(self):
         self.is_running = True
-        cursorManager = CursorManager(r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\MainMenu\cursorRight.png', r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\MainMenu\cursorLeft.png')
+        cursorManager = CursorManager(
+            r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\assets\cursorRight.png',
+            r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\assets\cursorLeft.png')
         tracker = HandTrackerWrapper()
         uiManager = UiManager()
-        bg_image = cv2.resize(cv2.imread(r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\MainMenu\img.png'), (tracker.cap.read()[1].shape[1], tracker.cap.read()[1].shape[0]))
+        bg_image = cv2.resize(
+            cv2.imread(r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\assets\mainMenuBG.png'),
+            (tracker.cap.read()[1].shape[1], tracker.cap.read()[1].shape[0]))
         handPositionListRT = []
         handPositionListLF = []
         mode = 0
         hand_colors = {"Right": (0, 0, 255),
                        "Left": (255, 0, 0)}
+        draw_game = SimpleDrawGame()
         game_open = 0
         x = bg_image.shape[1]
         y = bg_image.shape[0]
-        SimpleDrawGameButton = uiManager.Button(bg_image, int(x / 8), int(y / 2), int(x / 2), int(y - (y / 8)), [0, 255, 251])
-        SimpleDrawGameButton.CreateButton()
-        SimpleDrawGameButton.CreateImageButton(cv2.imread(r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\MainMenu\clock.png', cv2.IMREAD_UNCHANGED))
-        BackButton = uiManager.Button(bg_image, int(x - (x / 10)), int(0), int(x), int(y / 7), [0, 0, 251])
-        #BackButton.CreateButton()
+        SimpleDrawGameButton = uiManager.Button(bg_image, int(x / 8), int(y / 2), int(x / 2), int(y - (y / 8)),
+                                                [0, 255, 251])
+        SimpleDrawGameButton.CreateImageButton(
+            cv2.imread(r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\assets\freestyle_button.jpg',
+                       cv2.IMREAD_UNCHANGED))
+        bg_image_main = None
         while True:
             tracker.update_hands_list()
             for hand in tracker.hands_list:
                 if hand.isHandClick():
                     cursorManager.click(hand)
-                    print("click")
+            if game_open == 0:
+                bg_image_main = bg_image.copy()
             if game_open == 1:
-                draw_game = SimpleDrawGame()
-                bg_image = draw_game.run(tracker, bg_image.copy(), r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\SimpleDrawGame\img.png', handPositionListRT, handPositionListLF)
-            elif game_open == 2:
-                draw_game = SimpleDrawGame()
                 bg_image = draw_game.run(tracker, bg_image.copy(),
-                                         r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\SimpleDrawGame\img.png',
-                                         handPositionListRT, handPositionListLF, FirstRun=False)
-            if SimpleDrawGameButton.isClicked(cursorManager):
-                if game_open == 1 or game_open == 2:
-                    game_open = 2
-                else:
-                    game_open = 1
+                                         r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\assets\freestyleBG.png',
+                                         handPositionListRT, handPositionListLF, uiManager, cursorManager)
+                game_open = 2
+            elif game_open == 2:
+                bg_image = draw_game.run(tracker, bg_image.copy(),
+                                         r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\assets\freestyleBG.png',
+                                         handPositionListRT, handPositionListLF, uiManager, cursorManager,
+                                         FirstRun=False)
+                if draw_game.BackButton.isClicked(cursorManager):
+                    bg_image = bg_image_main.copy()
+                    game_open = 0
+            print(game_open)
+            if SimpleDrawGameButton.isClicked(cursorManager) and game_open == 0:
+                game_open = 1
             bg_image_copy = bg_image.copy()
             if tracker.hands_list.has_left():
                 x, y = tracker.hands_list.left.getLandmarkXY(HandLM.INDEX_FINGER_TIP)
@@ -77,6 +89,7 @@ class MainMenu:
                 break
         cv2.destroyAllWindows()
         self.is_running = False
+
 
 if __name__ == '__main__':
     mainmenu = MainMenu()
