@@ -1,4 +1,3 @@
-
 import pygame
 from mediapipe.python.solutions.hands import HandLandmark as HandLM
 from API.handTrackerWrapper import HandTrackerWrapper
@@ -14,22 +13,26 @@ GREEN = (0, 255, 0)
 END = (255, 0, 0)
 
 def run_maze_game():
-    # Initialize Pygame
+    # Initialize Pygame with hardware acceleration
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+    # Calculate the offset to center the game
+    offset_x = (SCREEN_WIDTH - len(LEVEL_1[0]) * MAZE_GRID_SIZE) // 2
+    offset_y = (SCREEN_HEIGHT - len(LEVEL_1) * MAZE_GRID_SIZE) // 2
 
     # Initialize the hand tracker
     hand_tracker = HandTrackerWrapper()
 
     # Set the starting position for the player
     player_radius = MAZE_GRID_SIZE // 4
-    player = pygame.Rect(0, 0, player_radius * 2, player_radius * 2)
+    player = pygame.Rect(offset_x, offset_y, player_radius * 2, player_radius * 2)
 
     # Initialize the cursor
     cursor_radius = 10
     player_cursor_color = GREEN
     hand_cursor_color = BLUE
-    hand_cursor = pygame.Rect(0, 0, cursor_radius * 2, cursor_radius * 2)
+    hand_cursor = pygame.Rect(offset_x, offset_y, cursor_radius * 2, cursor_radius * 2)
 
     # Initialize the last valid hand position
     last_valid_hand_position = hand_cursor.topleft
@@ -50,16 +53,20 @@ def run_maze_game():
             for col in range(len(maze_grid[row])):
                 if maze_grid[row][col] == 2:
                     start_row, start_col = row, col
-                    player.x = col * MAZE_GRID_SIZE
-                    player.y = row * MAZE_GRID_SIZE
-                    hand_cursor.topleft = (start_col * MAZE_GRID_SIZE, start_row * MAZE_GRID_SIZE)  # Reset hand cursor position to the start
+                    player.x = offset_x + col * MAZE_GRID_SIZE
+                    player.y = offset_y + row * MAZE_GRID_SIZE
+                    hand_cursor.topleft = (offset_x + start_col * MAZE_GRID_SIZE, offset_y + start_row * MAZE_GRID_SIZE)  # Reset hand cursor position to the start
                     maze_grid[row][col] = 0  # Set the starting position to an open path
         return maze_grid, start_row, start_col
 
-    maze_levels = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4 ]
+    maze_levels = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4]
     current_level = 0
 
     maze_grid, start_row, start_col = load_level(maze_levels[current_level])
+
+    # Smoothing variables
+    smoothing_factor = 0.2
+    smooth_hand_x, smooth_hand_y = hand_cursor.center
 
     while running:
         # Only update the screen if necessary
@@ -73,12 +80,12 @@ def run_maze_game():
         hand_tracker.update_hands_list()
 
         # Move player_grid_x and player_grid_y calculations outside the loop
-        player_grid_x = int(player.centerx / MAZE_GRID_SIZE)
-        player_grid_y = int(player.centery / MAZE_GRID_SIZE)
+        player_grid_x = int((player.centerx - offset_x) / MAZE_GRID_SIZE)
+        player_grid_y = int((player.centery - offset_y) / MAZE_GRID_SIZE)
 
         # Reset player position if the level is completed
         if reached_end:
-            player.center = (start_col * MAZE_GRID_SIZE + MAZE_GRID_SIZE // 2, start_row * MAZE_GRID_SIZE + MAZE_GRID_SIZE // 2)
+            player.center = (offset_x + start_col * MAZE_GRID_SIZE + MAZE_GRID_SIZE // 2, offset_y + start_row * MAZE_GRID_SIZE + MAZE_GRID_SIZE // 2)
             reached_end = False
             player_connected = False  # Disconnect player cursor from hand cursor
 
@@ -88,12 +95,16 @@ def run_maze_game():
                 hand_x = hand.getLandmarkX(HandLM.INDEX_FINGER_TIP)
                 hand_y = hand.getLandmarkY(HandLM.INDEX_FINGER_TIP)
 
-                # Update cursor position to match hand landmark
-                hand_cursor.center = (hand_x, hand_y)
+                # Smooth hand coordinates
+                smooth_hand_x = smooth_hand_x * (1 - smoothing_factor) + hand_x * smoothing_factor
+                smooth_hand_y = smooth_hand_y * (1 - smoothing_factor) + hand_y * smoothing_factor
+
+                # Update cursor position to match smoothed hand landmark
+                hand_cursor.center = (int(smooth_hand_x), int(smooth_hand_y))
 
                 # Translate hand cursor position to maze grid resolution
-                hand_grid_x = int(hand_cursor.centerx / MAZE_GRID_SIZE)
-                hand_grid_y = int(hand_cursor.centery / MAZE_GRID_SIZE)
+                hand_grid_x = int((hand_cursor.centerx - offset_x) / MAZE_GRID_SIZE)
+                hand_grid_y = int((hand_cursor.centery - offset_y) / MAZE_GRID_SIZE)
 
                 # Check if the hand cursor is inside the maze grid boundaries
                 if 0 <= hand_grid_y < len(maze_grid) and 0 <= hand_grid_x < len(maze_grid[0]):
@@ -131,9 +142,9 @@ def run_maze_game():
         for row in range(len(maze_grid)):
             for col in range(len(maze_grid[0])):
                 if maze_grid[row][col] == 1:
-                    pygame.draw.rect(screen, RED, (col * MAZE_GRID_SIZE, row * MAZE_GRID_SIZE, MAZE_GRID_SIZE, MAZE_GRID_SIZE))
+                    pygame.draw.rect(screen, RED, (offset_x + col * MAZE_GRID_SIZE, offset_y + row * MAZE_GRID_SIZE, MAZE_GRID_SIZE, MAZE_GRID_SIZE))
                 elif maze_grid[row][col] == 3:
-                    pygame.draw.circle(screen, END, (col * MAZE_GRID_SIZE + MAZE_GRID_SIZE // 2, row * MAZE_GRID_SIZE + MAZE_GRID_SIZE // 2), player_radius)
+                    pygame.draw.circle(screen, END, (offset_x + col * MAZE_GRID_SIZE + MAZE_GRID_SIZE // 2, offset_y + row * MAZE_GRID_SIZE + MAZE_GRID_SIZE // 2), player_radius)
 
         pygame.draw.circle(screen, player_cursor_color, player.center, player_radius)
         pygame.draw.circle(screen, hand_cursor_color, hand_cursor.center, cursor_radius)
