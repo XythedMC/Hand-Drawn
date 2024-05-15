@@ -22,7 +22,7 @@ class QuickDrawGame:
         cursorManager = CursorManager(r'Games/QuickDrawGame/cursorRight.png', r'Games/SimpleDrawGame/cursorLeft.png')
         predictor = QuickDrawPredictor(model=model)
         tracker = HandTrackerWrapper()
-        bg_image = cv2.resize(cv2.imread(r'Games/QuickDrawGame/img.png').copy(), (tracker.cap.read()[1].shape[1], tracker.cap.read()[1].shape[0]))
+        bg_image = cv2.resize(cv2.imread(r'Games/QuickDrawGame/mainMenuBG.png').copy(), (tracker.cap.read()[1].shape[1], tracker.cap.read()[1].shape[0]))
         mode = 0
         word = random.choice(predictor.label_list).replace('_', ' ')
         guess_txt = "I see"
@@ -67,7 +67,7 @@ class QuickDrawGame:
                         handPositionListLF.clear()
                         handPositionListRT.clear()
                     if hand.isHandOpen():
-                        bg_image = cv2.resize(cv2.imread(r'Games/QuickDrawGame/img.png').copy(), (920, 768))
+                        bg_image = cv2.resize(cv2.imread(r'Games/QuickDrawGame/mainMenuBG.png').copy(), (920, 768))
                 bg_image_copy = bg_image.copy()
                 if tracker.hands_list.has_left():
                     x, y = tracker.hands_list.left.getLandmarkXY(HandLM.INDEX_FINGER_TIP)

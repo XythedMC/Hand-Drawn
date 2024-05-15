@@ -11,10 +11,14 @@ class CursorManager():
         self.cursorRT = cv2.resize(cv2.imread(cursorRightPath, cv2.IMREAD_UNCHANGED), cursorRTdimentions)
         self.cursorClick = []
         self.cursorLF = cv2.resize(cv2.imread(cursorLeftPath, cv2.IMREAD_UNCHANGED), cursorLFdimentions)
+        self.cursorLFpos = [0, 0]
+        self.cursorRTpos = [0, 0]
 
     def displayCursor(self, background, xStartPosition, yStartPosition, cursorName: str):
         if cursorName == "Right":
+            self.cursorRTpos = [xStartPosition, yStartPosition]
             return overlay_image(background, self.cursorRT, xStartPosition, yStartPosition)
+        self.cursorLFpos = [xStartPosition, yStartPosition]
         return overlay_image(background, self.cursorLF, xStartPosition, yStartPosition)
 
     def click(self, hand):

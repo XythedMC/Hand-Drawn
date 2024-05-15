@@ -16,7 +16,7 @@ class SimpleDrawGame:
         self.is_running = True
         cursorManager = CursorManager(r'Games/SimpleDrawGame/cursorRight.png', r'Games/SimpleDrawGame/cursorLeft.png')
         tracker = HandTrackerWrapper()
-        bg_image = cv2.resize(cv2.imread(r'Games/SimpleDrawGame/img.png'), (tracker.cap.read()[1].shape[1],
+        bg_image = cv2.resize(cv2.imread(r'Games/SimpleDrawGame/mainMenuBG.png'), (tracker.cap.read()[1].shape[1],
                                                                             tracker.cap.read()[1].shape[0]))
         handPositionListRT = []
         handPositionListLF = []
@@ -51,7 +51,7 @@ class SimpleDrawGame:
                                 handPositionListLF.remove(handPositionListLF[0])
                                 handPositionListLF.remove(handPositionListLF[0])
                 elif hand.isHandOpen():
-                    bg_image = cv2.resize(cv2.imread(r'Games/SimpleDrawGame/img.png'),
+                    bg_image = cv2.resize(cv2.imread(r'Games/SimpleDrawGame/mainMenuBG.png'),
                                           (tracker.cap.read()[1].shape[1], tracker.cap.read()[1].shape[0]))
                 else:
                     if hand == tracker.hands_list.left:
