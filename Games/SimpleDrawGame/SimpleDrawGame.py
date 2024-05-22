@@ -1,7 +1,4 @@
 import os
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-import tensorflow as tf
-import time
 import cv2
 from mediapipe.python.solutions.hands import HandLandmark as HandLM
 from API.handTrackerWrapper import HandTrackerWrapper
@@ -14,17 +11,20 @@ class SimpleDrawGame:
 
     def run(self):
         self.is_running = True
-        cursorManager = CursorManager(r'Games/SimpleDrawGame/cursorRight.png', r'Games/SimpleDrawGame/cursorLeft.png')
+        cursorManager = CursorManager(
+            r'D:\Users\student\pycharm\handTrackingGiftedProject2\Games\SimpleDrawGame\cursorRight.png',
+            r'D:\Users\student\pycharm\handTrackingGiftedProject2\Games\SimpleDrawGame\cursorLeft.png')
         tracker = HandTrackerWrapper()
-        bg_image = cv2.resize(cv2.imread(r'Games/SimpleDrawGame/img.png'), (tracker.cap.read()[1].shape[1],
-                                                                            tracker.cap.read()[1].shape[0]))
+        bg_image = cv2.resize(
+            cv2.imread(r'D:\Users\student\pycharm\handTrackingGiftedProject2\Games\SimpleDrawGame\img.png'),
+            (tracker.cap.read()[1].shape[1],
+             tracker.cap.read()[1].shape[0]))
         handPositionListRT = []
         handPositionListLF = []
         mode = 0
         hand_colors = {"Right": (0, 0, 255),
                        "Left": (255, 0, 0)}
         while True:
-            time1 = time.time()
             tracker.update_hands_list()
             for hand in tracker.hands_list:
                 if hand.isIndexFingerUp():
@@ -52,7 +52,7 @@ class SimpleDrawGame:
                                 handPositionListLF.remove(handPositionListLF[0])
                                 handPositionListLF.remove(handPositionListLF[0])
                 elif hand.isHandOpen():
-                    bg_image = cv2.resize(cv2.imread(r'Games/SimpleDrawGame/img.png'),
+                    bg_image = cv2.resize(cv2.imread(r'D:\Users\student\pycharm\handTrackingGiftedProject2\Games\SimpleDrawGame\img.png'),
                                           (tracker.cap.read()[1].shape[1], tracker.cap.read()[1].shape[0]))
                 else:
                     if hand == tracker.hands_list.left:
@@ -66,8 +66,6 @@ class SimpleDrawGame:
             if tracker.hands_list.has_right():
                 x, y = tracker.hands_list.right.getLandmarkXY(HandLM.INDEX_FINGER_TIP)
                 cursorManager.displayCursor(bg_image_copy, x, y, "Right")
-            print(str(time.time() - time1) + " time 1")
-            time3 = time.time()
             cv2.namedWindow("Canvas", cv2.WINDOW_NORMAL)
             cv2.imshow("Canvas", bg_image_copy)
             image = tracker.cap.read()[1]
@@ -78,14 +76,13 @@ class SimpleDrawGame:
             if tracker.hands_list.has_left():
                 image = cv2.circle(image, tracker.hands_list.left.getLandmarkXY(HandLM.INDEX_FINGER_TIP), 4,
                                    (255, 0, 0), cv2.LINE_AA)
-
-            print(str(time.time() - time3) + " time 3")
-
-            time2 = time.time()
             cv2.imshow("Video", image)
-            print(str(time.time() - time2) + " time 2")
-            print(time.time() - time1)
             if (cv2.waitKey(1) & 0xFF) == ord('q'):
                 break
         cv2.destroyAllWindows()
         self.is_running = False
+
+
+if __name__ == "__main__":
+    game = SimpleDrawGame()
+    game.run()
