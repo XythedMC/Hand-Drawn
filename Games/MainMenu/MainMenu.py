@@ -8,7 +8,7 @@ from API.handTrackerWrapper import HandTrackerWrapper
 from API.CursorManager import CursorManager
 from API.UiManager import UiManager
 # from Games.SimpleDrawGame.SimpleDrawGame import SimpleDrawGame
-# from Games.SimpleMazeGame.SimpleMazeGame import SimpleMazeGame
+from Games.MainMenu.SimpleMazeGame import SimpleMazeGame
 from Games.MainMenu.SimpleDrawGame import SimpleDrawGame
 import time
 
@@ -30,6 +30,7 @@ class MainMenu:
         handPositionListRT = []
         handPositionListLF = []
         draw_game = SimpleDrawGame()
+        maze_game = SimpleMazeGame(tracker.cap.read()[1].shape[1], tracker.cap.read()[1].shape[0])
         game_open = 0
         x = bg_image.shape[1]
         y = bg_image.shape[0]
@@ -38,6 +39,12 @@ class MainMenu:
         SimpleDrawGameButton.CreateImageButton(
             cv2.imread(r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\assets\freestyle_button.jpg',
                        cv2.IMREAD_UNCHANGED))
+        MazeGameButton = uiManager.Button(bg_image, int(x / 2 + 50), int(y / 2), int(x - (x / 6)), int(y - (y / 8)),
+                                                [0, 255, 251])
+        MazeGameButton.CreateImageButton(
+            cv2.imread(r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\assets\freestyle_button.jpg',
+                       cv2.IMREAD_UNCHANGED))
+        MazeGameButtonClicked = False
         bg_image_main = None
         while True:
             tracker.update_hands_list()
@@ -59,16 +66,28 @@ class MainMenu:
                 if draw_game.BackButton.isClicked(cursorManager):
                     bg_image = bg_image_main.copy()
                     game_open = 0
+            elif game_open == 3:
+                print('LSJLKSFDJLKSDFJKLJK')
+                if maze_game.running and maze_game.handOpen == False:
+                    bg_image = maze_game.run_maze_game(tracker)
+                else:
+                    maze_game.running = False
+                    bg_image = bg_image_main.copy()
+                    game_open = 0
             print(game_open)
             if SimpleDrawGameButton.isClicked(cursorManager) and game_open == 0:
                 game_open = 1
+            if MazeGameButton.isClicked(cursorManager) and game_open == 0:
+                print('HELLO ASD;ALSKD;ASLKD')
+                game_open = 3
             bg_image_copy = bg_image.copy()
-            if tracker.hands_list.has_left():
-                x, y = tracker.hands_list.left.getLandmarkXY(HandLM.INDEX_FINGER_TIP)
-                cursorManager.displayCursor(bg_image_copy, x, y, "Left")
-            if tracker.hands_list.has_right():
-                x, y = tracker.hands_list.right.getLandmarkXY(HandLM.INDEX_FINGER_TIP)
-                cursorManager.displayCursor(bg_image_copy, x, y, "Right")
+            if game_open != 3:
+                if tracker.hands_list.has_left():
+                    x, y = tracker.hands_list.left.getLandmarkXY(HandLM.INDEX_FINGER_TIP)
+                    cursorManager.displayCursor(bg_image_copy, x, y, "Left")
+                if tracker.hands_list.has_right():
+                    x, y = tracker.hands_list.right.getLandmarkXY(HandLM.INDEX_FINGER_TIP)
+                    cursorManager.displayCursor(bg_image_copy, x, y, "Right")
             cv2.namedWindow("MainMenu", cv2.WINDOW_GUI_NORMAL)
             cv2.resizeWindow('MainMenu', bg_image_copy.shape[1], bg_image_copy.shape[0])
             cv2.imshow("MainMenu", bg_image_copy)
