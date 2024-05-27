@@ -74,19 +74,15 @@ class UiManager:
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
         def isClicked(self, cursorManager):
-            print(cursorManager.cursorClick)
             if cursorManager.cursorClick:
-                print("hi")
                 if self.xPos2 > cursorManager.cursorClick[0] > self.xPos1 and self.yPos2 > cursorManager.cursorClick[
                     1] > self.yPos1:
                     return True
-            else:
-                print("HELLO")
             return False
 
         def isCursorHover(self, cursorManager):
-            if ((self.xPos2 > cursorManager.cursorRTpos[0] > self.xPos1 and self.yPos2 > cursorManager.cursorRTpos[1])
-                    and (self.xPos2 > cursorManager.cursorLFpos[0] > self.xPos1 and self.yPos2 >
-                         cursorManager.cursorLFpos[1])):
+            if ((self.xPos2 > cursorManager.cursorRTpos[0] > self.xPos1 and self.yPos2 > cursorManager.cursorRTpos[1] > self.yPos1)
+                    or (self.xPos2 > cursorManager.cursorLFpos[0] > self.xPos1 and self.yPos2 >
+                        cursorManager.cursorLFpos[1] > self.yPos1)):
                 return True
             return False

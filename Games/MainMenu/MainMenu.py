@@ -8,9 +8,7 @@ from API.handTrackerWrapper import HandTrackerWrapper
 from API.CursorManager import CursorManager
 from API.UiManager import UiManager
 # from Games.SimpleDrawGame.SimpleDrawGame import SimpleDrawGame
-# from Games.SimpleMazeGame.SimpleMazeGame import SimpleMazeGame
 from Games.MainMenu.SimpleDrawGame import SimpleDrawGame
-import time
 
 
 class MainMenu:
@@ -29,9 +27,6 @@ class MainMenu:
             (tracker.cap.read()[1].shape[1], tracker.cap.read()[1].shape[0]))
         handPositionListRT = []
         handPositionListLF = []
-        mode = 0
-        hand_colors = {"Right": (0, 0, 255),
-                       "Left": (255, 0, 0)}
         draw_game = SimpleDrawGame()
         game_open = 0
         x = bg_image.shape[1]
@@ -62,16 +57,16 @@ class MainMenu:
                 if draw_game.BackButton.isClicked(cursorManager):
                     bg_image = bg_image_main.copy()
                     game_open = 0
-            print(game_open)
             if SimpleDrawGameButton.isClicked(cursorManager) and game_open == 0:
                 game_open = 1
             bg_image_copy = bg_image.copy()
-            if tracker.hands_list.has_left():
-                x, y = tracker.hands_list.left.getLandmarkXY(HandLM.INDEX_FINGER_TIP)
-                cursorManager.displayCursor(bg_image_copy, x, y, "Left")
-            if tracker.hands_list.has_right():
-                x, y = tracker.hands_list.right.getLandmarkXY(HandLM.INDEX_FINGER_TIP)
-                cursorManager.displayCursor(bg_image_copy, x, y, "Right")
+            if game_open != 3:
+                if tracker.hands_list.has_left():
+                    x, y = tracker.hands_list.left.getLandmarkXY(HandLM.INDEX_FINGER_TIP)
+                    cursorManager.displayCursor(bg_image_copy, x, y, "Left")
+                if tracker.hands_list.has_right():
+                    x, y = tracker.hands_list.right.getLandmarkXY(HandLM.INDEX_FINGER_TIP)
+                    cursorManager.displayCursor(bg_image_copy, x, y, "Right")
             cv2.namedWindow("MainMenu", cv2.WINDOW_GUI_NORMAL)
             cv2.resizeWindow('MainMenu', bg_image_copy.shape[1], bg_image_copy.shape[0])
             cv2.imshow("MainMenu", bg_image_copy)
