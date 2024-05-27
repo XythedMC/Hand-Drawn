@@ -17,6 +17,7 @@ class CursorManager():
     def displayCursor(self, background, xStartPosition, yStartPosition, cursorName: str):
         if cursorName == "Right":
             self.cursorRTpos = [xStartPosition, yStartPosition]
+            print(self.cursorRTpos)
             return overlay_image(background, self.cursorRT, xStartPosition, yStartPosition)
         self.cursorLFpos = [xStartPosition, yStartPosition]
         return overlay_image(background, self.cursorLF, xStartPosition, yStartPosition)

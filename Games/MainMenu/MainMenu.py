@@ -29,9 +29,6 @@ class MainMenu:
             (tracker.cap.read()[1].shape[1], tracker.cap.read()[1].shape[0]))
         handPositionListRT = []
         handPositionListLF = []
-        mode = 0
-        hand_colors = {"Right": (0, 0, 255),
-                       "Left": (255, 0, 0)}
         draw_game = SimpleDrawGame()
         game_open = 0
         x = bg_image.shape[1]
