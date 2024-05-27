@@ -9,7 +9,6 @@ from API.CursorManager import CursorManager
 from API.UiManager import UiManager
 # from Games.SimpleDrawGame.SimpleDrawGame import SimpleDrawGame
 from Games.MainMenu.SimpleDrawGame import SimpleDrawGame
-import time
 
 
 class MainMenu:
@@ -37,12 +36,6 @@ class MainMenu:
         SimpleDrawGameButton.CreateImageButton(
             cv2.imread(r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\assets\freestyle_button.jpg',
                        cv2.IMREAD_UNCHANGED))
-        MazeGameButton = uiManager.Button(bg_image, int(x / 2 + 50), int(y / 2), int(x - (x / 6)), int(y - (y / 8)),
-                                                [0, 255, 251])
-        MazeGameButton.CreateImageButton(
-            cv2.imread(r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\assets\freestyle_button.jpg',
-                       cv2.IMREAD_UNCHANGED))
-        MazeGameButtonClicked = False
         bg_image_main = None
         while True:
             tracker.update_hands_list()
