@@ -8,7 +8,6 @@ from API.handTrackerWrapper import HandTrackerWrapper
 from API.CursorManager import CursorManager
 from API.UiManager import UiManager
 # from Games.SimpleDrawGame.SimpleDrawGame import SimpleDrawGame
-from Games.MainMenu.SimpleMazeGame import SimpleMazeGame
 from Games.MainMenu.SimpleDrawGame import SimpleDrawGame
 import time
 
@@ -30,7 +29,6 @@ class MainMenu:
         handPositionListRT = []
         handPositionListLF = []
         draw_game = SimpleDrawGame()
-        maze_game = SimpleMazeGame(tracker.cap.read()[1].shape[1], tracker.cap.read()[1].shape[0])
         game_open = 0
         x = bg_image.shape[1]
         y = bg_image.shape[0]
@@ -66,20 +64,8 @@ class MainMenu:
                 if draw_game.BackButton.isClicked(cursorManager):
                     bg_image = bg_image_main.copy()
                     game_open = 0
-            elif game_open == 3:
-                print('LSJLKSFDJLKSDFJKLJK')
-                if maze_game.running and maze_game.handOpen == False:
-                    bg_image = maze_game.run_maze_game(tracker)
-                else:
-                    maze_game.running = False
-                    bg_image = bg_image_main.copy()
-                    game_open = 0
-            print(game_open)
             if SimpleDrawGameButton.isClicked(cursorManager) and game_open == 0:
                 game_open = 1
-            if MazeGameButton.isClicked(cursorManager) and game_open == 0:
-                print('HELLO ASD;ALSKD;ASLKD')
-                game_open = 3
             bg_image_copy = bg_image.copy()
             if game_open != 3:
                 if tracker.hands_list.has_left():

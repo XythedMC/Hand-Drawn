@@ -29,8 +29,6 @@ class SimpleDrawGame:
         x = bg_image.shape[1]
         y = bg_image.shape[0]
         self.BackButton = uiManager.Button(bg_image, int(x - x / 7), int(0), int(x), int(y / 6), [0, 0, 0])
-        #self.BackButton = uiManager.Button(bg_image, int(x / 3), int(y / 3), int(x - (x / 3)), int(y / 2),
-                                           #[0, 255, 251])
         self.BackButton.CreateImageButton(
             cv2.imread(r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\assets\back_button.jpg'))
         if self.BackButton.isCursorHover(cursorManager) is False:
