@@ -1,13 +1,11 @@
-from typing import Sequence
-from mediapipe.python.solutions.hands import HandLandmark as HandLM
 import cv2
-from API.CursorManager import CursorManager
 from API.SimpleHand import SimpleHand
 from API.handTrackerWrapper import HandTrackerWrapper
 import numpy as np
 
-class DrawManager():
-    def __init__(self, radius, color : dict, thickness, lineType, drawMethod : str):
+
+class DrawManager:
+    def __init__(self, radius, color: dict, thickness, lineType, drawMethod: str):
         self.radius = radius
         self.color = color
         self.thickness = thickness
@@ -33,13 +31,15 @@ class DrawManager():
             cv2.circle(frame, (x, y), self.radius, self.color["Left"], self.lineType)
         return frame
 
-    def DrawByLines(self, bg_image, x, y, tracker : HandTrackerWrapper, hand : SimpleHand):
+    def DrawByLines(self, bg_image, x, y, tracker: HandTrackerWrapper, hand: SimpleHand):
         if hand == tracker.hands_list.right:
             if len(self.LinePositionListRT) != 4:
                 self.LinePositionListRT.append(x)
                 self.LinePositionListRT.append(y)
             else:
-                cv2.line(bg_image, (self.LinePositionListRT[0], self.LinePositionListRT[1]), (self.LinePositionListRT[2], self.LinePositionListRT[3]), self.color["Right"], self.thickness, self.lineType)
+                cv2.line(bg_image, (self.LinePositionListRT[0], self.LinePositionListRT[1]),
+                         (self.LinePositionListRT[2], self.LinePositionListRT[3]), self.color["Right"], self.thickness,
+                         self.lineType)
                 self.PositionListRT.append(self.LinePositionListRT)
                 self.LinePositionListRT.remove(self.LinePositionListRT[0])
                 self.LinePositionListRT.remove(self.LinePositionListRT[0])
@@ -56,7 +56,7 @@ class DrawManager():
                 self.LinePositionListLF.remove(self.LinePositionListLF[0])
         return bg_image
 
-    def ClearCanvas(self, tracker : HandTrackerWrapper, hand, frame):
+    def ClearCanvas(self, tracker: HandTrackerWrapper, hand, frame):
         if hand == tracker.hands_list.right:
             frame[np.all(frame == self.color["Right"], axis=-1)] = (255, 255, 255)
             if self.drawMethod == "Line":
@@ -68,4 +68,3 @@ class DrawManager():
                 self.LinePositionListLF.clear()
             self.PositionListLF.clear()
         return frame
-

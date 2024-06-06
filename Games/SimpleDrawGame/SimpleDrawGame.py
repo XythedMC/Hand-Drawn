@@ -1,8 +1,4 @@
 import os
-
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-import tensorflow as tf
-import time
 import cv2
 from mediapipe.python.solutions.hands import HandLandmark as HandLM
 from API.handTrackerWrapper import HandTrackerWrapper
@@ -16,12 +12,14 @@ class SimpleDrawGame:
 
     def run(self):
         self.is_running = True
+        filePath = os.path.realpath(os.path.dirname(__file__))
+        print(filePath)
         cursorManager = CursorManager(
-            r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\SimpleDrawGame\cursorRight.png',
-            r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\SimpleDrawGame\cursorLeft.png')
+            filePath + r'\cursorRight.png',
+            filePath + r'\cursorLeft.png')
         tracker = HandTrackerWrapper()
         bg_image = cv2.resize(
-            cv2.imread(r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\SimpleDrawGame\img.png'),
+            cv2.imread(filePath + r'\img.png'),
             (tracker.cap.read()[1].shape[1],
              tracker.cap.read()[1].shape[0]))
         hand_colors = {"Right": (0, 0, 255),

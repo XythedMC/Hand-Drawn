@@ -15,15 +15,11 @@ class HandTrackerWrapper:
         self.cap = cv2.VideoCapture(camera_ch)
 
     def update_hands_list(self):
-
         success, image = self.cap.read()
-
         if self.__flip_image:
             image = cv2.flip(image, 1)
-
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         results = self.__mp_hands.process(image_rgb)
-
         count = 0
         if results.multi_hand_landmarks:
             for handLms in results.multi_hand_landmarks:
@@ -46,7 +42,6 @@ class HandTrackerWrapper:
 
     def get_hands_image(self):
         success, image = self.cap.read()
-
         if self.__flip_image:
             image = cv2.flip(image, 1)
         count = 0
