@@ -25,9 +25,6 @@ class SimpleDrawGame:
         hand_colors = {"Right": (0, 0, 255),
                        "Left": (255, 0, 0)}
         drawManager = DrawManager(6, hand_colors, 6, cv2.FILLED, "Dot")
-        handPositionListRT = []
-        handPositionListLF = []
-
         while True:
             tracker.update_hands_list()
             for hand in tracker.hands_list:
@@ -37,11 +34,6 @@ class SimpleDrawGame:
                                                 bg_image)
                 elif hand.isHandOpen():
                     bg_image = drawManager.ClearCanvas(tracker, hand, bg_image)
-                else:
-                    if hand == tracker.hands_list.left:
-                        handPositionListLF.clear()
-                    else:
-                        handPositionListRT.clear()
             bg_image_copy = bg_image.copy()
             if tracker.hands_list.has_left():
                 x, y = tracker.hands_list.left.getLandmarkXY(HandLM.INDEX_FINGER_TIP)
