@@ -3,10 +3,12 @@ import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 import tensorflow as tf
 import cv2
-from mediapipe.python.solutions.hands import HandLandmark as HandLM
 from API.handTrackerWrapper import HandTrackerWrapper
 from API.CursorManager import CursorManager
 from API.UiManager import UiManager
+
+# Hand landmark indices
+INDEX_FINGER_TIP = 8
 
 
 class SimpleDrawGame:
@@ -30,19 +32,19 @@ class SimpleDrawGame:
         y = bg_image.shape[0]
         self.BackButton = uiManager.Button(bg_image, int(x - x / 7), int(0), int(x), int(y / 6), [0, 0, 0])
         self.BackButton.CreateImageButton(
-            cv2.imread(r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\assets\back_button.jpg'))
+            cv2.imread('Games/assets/back_button.jpg'))
         if self.BackButton.isCursorHover(cursorManager) is False:
             for hand in tracker.hands_list:
                 if hand.isIndexFingerUp():
                     color = hand_colors[hand.side]
                     if mode == 1:
-                        cv2.circle(bg_image, (hand.getLandmarkX(HandLM.INDEX_FINGER_TIP),
-                                              hand.getLandmarkY(HandLM.INDEX_FINGER_TIP)), 6, color, cv2.FILLED)
+                        cv2.circle(bg_image, (hand.getLandmarkX(INDEX_FINGER_TIP),
+                                              hand.getLandmarkY(INDEX_FINGER_TIP)), 6, color, cv2.FILLED)
                     else:
                         if hand == tracker.hands_list.right:
                             if len(handPositionListRT) != 4:
-                                handPositionListRT.append(hand.getLandmarkX(HandLM.INDEX_FINGER_TIP))
-                                handPositionListRT.append(hand.getLandmarkY(HandLM.INDEX_FINGER_TIP))
+                                handPositionListRT.append(hand.getLandmarkX(INDEX_FINGER_TIP))
+                                handPositionListRT.append(hand.getLandmarkY(INDEX_FINGER_TIP))
                             else:
                                 cv2.line(bg_image, (handPositionListRT[0], handPositionListRT[1]),
                                          (handPositionListRT[2], handPositionListRT[3]), color, 6, cv2.FILLED)
@@ -50,8 +52,8 @@ class SimpleDrawGame:
                                 handPositionListRT.remove(handPositionListRT[0])
                         else:
                             if len(handPositionListLF) != 4:
-                                handPositionListLF.append(hand.getLandmarkX(HandLM.INDEX_FINGER_TIP))
-                                handPositionListLF.append(hand.getLandmarkY(HandLM.INDEX_FINGER_TIP))
+                                handPositionListLF.append(hand.getLandmarkX(INDEX_FINGER_TIP))
+                                handPositionListLF.append(hand.getLandmarkY(INDEX_FINGER_TIP))
                             else:
                                 cv2.line(bg_image, (handPositionListLF[0], handPositionListLF[1]),
                                          (handPositionListLF[2], handPositionListLF[3]), color, 6, cv2.FILLED)
@@ -65,7 +67,7 @@ class SimpleDrawGame:
                     #self.BackButton = uiManager.Button(bg_image, int(x / 3), int(y / 3), int(x - (x / 3)), int(y / 2),
                     #                                   [0, 255, 251])
                     self.BackButton.CreateImageButton(
-                        cv2.imread(r'C:\Users\User\PycharmProjects\handTrackingGiftedProject\Games\assets\back_button.jpg'))
+                        cv2.imread('Games/assets/back_button.jpg', cv2.IMREAD_UNCHANGED))   
                 else:
                     if hand == tracker.hands_list.left:
                         handPositionListLF.clear()

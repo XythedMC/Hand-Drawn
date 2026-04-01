@@ -1,4 +1,4 @@
-from Games.SimpleDrawGame.SimpleDrawGame import SimpleDrawGame
+from Games.MainMenu.MainMenu import MainMenu
 
 
 def main():
@@ -6,7 +6,7 @@ def main():
         num = 1
 
         if num == 1:
-            draw_game = SimpleDrawGame()
+            draw_game = MainMenu()
             draw_game.run()
 
 

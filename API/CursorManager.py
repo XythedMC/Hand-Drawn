@@ -1,7 +1,9 @@
 import cv2
 import numpy as np
-from mediapipe.python.solutions.hands import HandLandmark as HandLM
 from API.UiManager import UiManager, overlay_image
+
+# Hand landmark indices
+INDEX_FINGER_TIP = 8
 
 
 class CursorManager():
@@ -23,8 +25,8 @@ class CursorManager():
 
     def click(self, hand):
         self.cursorClick.clear()
-        self.cursorClick.append(hand.getLandmarkX(HandLM.INDEX_FINGER_TIP))
-        self.cursorClick.append(hand.getLandmarkY(HandLM.INDEX_FINGER_TIP))
+        self.cursorClick.append(hand.getLandmarkX(INDEX_FINGER_TIP))
+        self.cursorClick.append(hand.getLandmarkY(INDEX_FINGER_TIP))
 
     def overlay_image_with_bound_box(self, background, overlay, x_offset, y_offset):
         bg_h, bg_w, bg_channels = background.shape

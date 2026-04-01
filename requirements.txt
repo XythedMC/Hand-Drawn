@@ -1,4 +1,4 @@
-mediapipe~=0.10.11
+mediapipe
 opencv-python~=4.9.0.80
 numpy~=1.26.4
 tensorflow~=2.15.1
